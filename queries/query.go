@@ -28,6 +28,7 @@ type Query struct {
 	load     []string
 	loadMods map[string]Applicator
 
+	plain      string
 	delete     bool
 	update     map[string]interface{}
 	withs      []argClause
@@ -206,6 +207,11 @@ func SetSQL(q *Query, sql string, args ...interface{}) {
 // over and over.
 func SetArgs(q *Query, args ...interface{}) {
 	q.rawSQL.args = args
+}
+
+// SetPlain on the query.
+func SetPlain(q *Query, plain string) {
+	q.plain = plain
 }
 
 // SetLoad on the query.

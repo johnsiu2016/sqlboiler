@@ -60,6 +60,22 @@ func SQL(sql string, args ...interface{}) QueryMod {
 	}
 }
 
+type plainQueryMod struct {
+	plain string
+}
+
+// Apply implements QueryMod.Apply.
+func (qm plainQueryMod) Apply(q *queries.Query) {
+	queries.SetPlain(q, qm.plain)
+}
+
+// Plain allows you to execute a plain SQL statement and SQL clauses
+func Plain(plain string) QueryMod {
+	return plainQueryMod{
+		plain: plain,
+	}
+}
+
 type loadQueryMod struct {
 	relationship string
 	mods         []QueryMod

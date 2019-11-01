@@ -29,6 +29,8 @@ func BuildQuery(q *Query) (string, []interface{}) {
 		buf, args = buildDeleteQuery(q)
 	case len(q.update) > 0:
 		buf, args = buildUpdateQuery(q)
+	case q.plain != "":
+		buf, args = buildPlainQuery(q)
 	default:
 		buf, args = buildSelectQuery(q)
 	}
@@ -41,6 +43,25 @@ func BuildQuery(q *Query) (string, []interface{}) {
 	q.rawSQL.args = args
 
 	return bufStr, args
+}
+
+func buildPlainQuery(q *Query) (*bytes.Buffer, []interface{}) {
+	buf := strmangle.GetBuffer()
+	var args []interface{}
+
+	buf.WriteString(q.plain)
+
+	where, whereArgs := whereClause(q, 1)
+	buf.WriteString(where)
+	if len(whereArgs) != 0 {
+		args = append(args, whereArgs...)
+	}
+
+	writeModifiers(q, buf, &args)
+
+	buf.WriteByte(';')
+
+	return buf, args
 }
 
 func buildSelectQuery(q *Query) (*bytes.Buffer, []interface{}) {
